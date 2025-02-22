@@ -1,0 +1,1 @@
+sudo ln -s /etc/nginx/sites-available/sudoku.fh-salzburg.ac.at /etc/nginx/sites-enabled/

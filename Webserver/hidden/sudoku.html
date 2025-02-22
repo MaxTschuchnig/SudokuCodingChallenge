@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FHSSudoku</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        .logo {
+            height: 100px;
+            margin-left: 24px;
+            margin-right: 24px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <header class="d-flex justify-content-between align-items-center p-3 bg-light">
+            <!-- User Profile Section -->
+            <div class="d-flex align-items-center">
+                <div class="user-info">
+                    <span v-if="userRank === 1" class="badge bg-warning me-2">🥇</span>
+                    <span v-else-if="userRank === 2" class="badge bg-warning me-2">🥈</span>
+                    <span v-else-if="userRank === 3" class="badge bg-warning me-2">🥉</span>
+                    <span v-else class="badge bg-secondary text-white me-2"
+                        style="font-size: 1rem; padding: 0.5em 0.75em; border-radius: 0.5rem;">
+                        {{ userRank }}
+                    </span>
+                    {{ profileName }}
+                </div>
+            </div>
+            <!-- 3 am, getting really tired building ui now ...-->
+
+            <!-- Progress Bar (Middle) -->
+            <div class="flex-grow-1 px-4">
+                <div class="progress" style="height: 10px;">
+                    <div class="progress-bar bg-success" role="progressbar" :style="{ width: progressPercentage + '%' }"
+                        aria-valuenow="allSolves" aria-valuemin="0" aria-valuemax="100000">
+                    </div>
+                </div>
+                <small class="d-block text-center">
+                    <span v-if="overallRank === 0">❄️</span>
+                    <span v-else-if="overallRank === 1">🔥🔥🔥</span>
+                    <span v-else-if="overallRank === 2">🔥🔥🔥🔥🔥🔥🔥🔥🔥</span>
+                    <span v-else-if="overallRank === 3">🔥⚡🔥💥🔥💥🔥⚡🔥💥🔥💥🔥⚡🔥💥🔥</span>
+                    {{ allSolves }} / {{overallTargets[overallRank]}} for Target: {{overallRank+1}}
+                </small>
+            </div>
+
+            <!-- Button Section -->
+            <div>
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal"
+                    data-bs-target="#exampleModal">
+                    Edit Profile
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Edit Profile</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <label for="profileNameInput" class="form-label">Profile Name:</label>
+                                <input type="text" id="profileNameInput" v-model="profileName" class="form-control"
+                                    placeholder="Enter new profile name">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" @click="handleEdit">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button @click="logout" class="btn btn-danger">
+                    Logout
+                </button>
+            </div>
+        </header>
+
+        <div class="container my-5">
+            <div class="text-center mb-4">
+                <h1>FHS Sudoku Solving Challenge<img src="logo.png" alt="FH-Salzburg" class="logo"></h1>
+                <!--<p class="lead">Internal Coding Event</p>-->
+            </div>
+
+            <!-- Tabs Navigation -->
+            <ul class="nav nav-tabs" id="myTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#home" role="tab"
+                        aria-controls="home" aria-selected="true">Information</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="dashboard-tab" data-bs-toggle="tab" href="#dashboard" role="tab"
+                        aria-controls="dashboard" aria-selected="false">Dashboard</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="dashboard-tab" data-bs-toggle="tab" href="#highscore" role="tab"
+                        aria-controls="highscore" aria-selected="false">Highscore</a>
+                </li>
+            </ul>
+
+            <!-- Tabs Content -->
+            <div class="tab-content" id="myTabsContent">
+                <!-- Information Tab Content -->
+                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                    <div class="alert alert-info mt-4" role="alert">
+                        <h4 class="alert-heading">General Information</h4>
+                        <p>The task is to use the provided server to obtain sudokus in JSON format, solve them as
+                            quickly as possible and
+                            send them back to the server for validation. There will be two price categories:</p>
+                        <ol>
+                            <li>Whoever solves the most sudokus individually.</li>
+                            <li>All students will work together on a common price, based on the total number of sudokus
+                                reached. The different targets are 10k, 1 million and 100 million sudokus solved during
+                                the event.</li>
+                        </ol>
+                        <p>You can track the progress of yourself (and others) as well as the group in the Dashboard and
+                            Highscores tabs.</p>
+                        <strong>This competition is a passion project. Please handle the server with care and don't do
+                            anything
+                            that would destroy it or take the fun away of anybody else.</strong> <br>
+                        <a href="rules.html">Please follow the rules!</a>
+                    </div>
+
+                    <div class="alert alert-info mt-4" role="alert">
+                        <h4 class="alert-heading">Access the API</h4>
+                        <p>To get access to the sudokus, use the API:</p>
+                        <ul>
+                            <li><a href="/sudoku" class="alert-link">Get single sudoku</a> —
+                                Retrieve a
+                                single sudoku (limited to 20 requests per minute).</li>
+                            <li><a href="/hidden/solvebyhand.html" class="alert-link">Solve a single sudoku by
+                                    yourself</a></li>
+                            <li><a href="/sudokus" class="alert-link">Get bulk sudokus</a> —
+                                Retrieve
+                                100 sudokus at a time.</li>
+                            <li><a href="/hashsudokus" class="alert-link">Get big bulk sudokus</a> —
+                                Retrieve
+                                10000 sudokus at a time.</li>
+                        </ul>
+                        <p class="mb-0">Note: You need to be logged in to access the API. To automate this access,
+                            extract the string from the auth cookie. For more info, check the demo code or ask the
+                            staff.</p>
+                        <p class="mb-0">Note: For efficiency reasons, a single user can only try to solve a max of 200
+                            sudokus at once.
+                            If a user tries to solve more than 200 at once, no more sudokus will be provided by the
+                            backend.
+                            If you have a system that can solve more than 200 sudokus in parallel, please contact
+                            the staff.</p>
+                    </div>
+
+                    <div class="alert alert-info" role="alert">
+                        <h4 class="alert-heading">Automated API access</h4>
+                        <p>To make the task accessible to everyone, demo codes are provided. To access the API
+                            automatically, a Node.js (Javascript) and Python demo is provided. You only need to
+                            insert your
+                            auth cookie string and implement the solve function:</p>
+                        <ul>
+                            <li><a href="/hidden/nodeconsumer.js" class="alert-link">Get node
+                                    demo</a>
+                            </li>
+                            <li><a href="/hidden/pyconsumer.py" class="alert-link">Get python
+                                    demo</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Dashboard Tab Content -->
+                <div class="tab-pane fade" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
+                    <div class="alert alert-warning mt-4" role="alert">
+                        <h4 class="alert-heading">Personal Scores: {{personalSolves}} Sudokus solved</h4>
+                        <canvas ref="personalChart"></canvas>
+                    </div>
+                    <div class="alert alert-warning mt-4" role="alert">
+                        <h4 class="alert-heading">Overall Scores: {{allSolves}} Sudokus were solved by everyone combined
+                        </h4>
+                        <canvas ref="overallChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Highscore Tab Content -->
+                <div class="tab-pane fade" id="highscore" role="tabpanel" aria-labelledby="highscore-tab">
+                    <div class="mt-4">
+                        <ul class="list-group">
+                            <li v-for="(user, index) in bestUsers" :key="index"
+                                :class="['list-group-item', 'd-flex', 'justify-content-between', 'align-items-center', 
+                        { 'bg-primary text-white': index === 0, 'bg-secondary text-white': index === 1, 'bg-info text-white': index === 2 }]">
+                                <div class="user-info">
+                                    <span v-if="index === 0" class="badge bg-warning me-2">🥇</span>
+                                    <span v-else-if="index === 1" class="badge bg-warning me-2">🥈</span>
+                                    <span v-else-if="index === 2" class="badge bg-warning me-2">🥉</span>
+                                    <span v-else class="badge bg-secondary text-white me-2"
+                                        style="font-size: 1rem; padding: 0.5em 0.75em; border-radius: 0.5rem;">
+                                        {{ user.rank }}
+                                    </span>
+                                    {{ user.name }}
+                                </div>
+
+                                <span class="badge bg-success">{{ user.numberSolved }} puzzles solved <span
+                                        v-if="hasNewlySolved(user)">(+{{getLatestSolves(user)}} solves)</span></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="sudoku.js" type="module"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+        integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

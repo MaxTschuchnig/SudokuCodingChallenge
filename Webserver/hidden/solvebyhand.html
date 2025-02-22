@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FHSSudoku</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+
+<body>
+    <div id="app" class="container mt-4">
+        <h2 class="text-center">Play Sudoku (currently solving sudoku: {{currentId}})</h2>
+    
+        <div class="d-flex justify-content-center mt-3">
+            <button type="button" style="margin-left: 8px; margin-right: 8px;" class="btn btn-primary btn-lg" @click="sendResults">validate</button>
+            <button type="button" style="margin-left: 8px; margin-right: 8px;" class="btn btn-secondary btn-lg" @click="ret">return</button>
+        </div>
+    
+        <div class="d-flex justify-content-center mt-4">
+            <table class="table border-dark text-center w-auto">
+                <tbody>
+                    <tr v-for="(blockRow, blockRowIndex) in 3" :key="blockRowIndex">
+                        <td v-for="(blockCol, blockColIndex) in 3" :key="blockColIndex" class="border border-2 border-dark">
+                            <table class="w-100 h-100">
+                                <tbody>
+                                    <tr v-for="(rowOffset, rowIndex) in 3" :key="rowIndex">
+                                        <td v-for="(colOffset, colIndex) in 3" 
+                                            :key="colIndex" 
+                                            class="p-1 border text-center">
+                                            <input v-if="!isPrefilled(blockRowIndex * 3 + rowIndex, blockColIndex * 3 + colIndex)" 
+                                                   type="text" 
+                                                   class="form-control text-center" 
+                                                   maxlength="1" 
+                                                   @input="updateCell($event, blockRowIndex * 3 + rowIndex, blockColIndex * 3 + colIndex)">
+                                            <span v-else class="fw-bold">{{ sudokuGrid[blockRowIndex * 3 + rowIndex][blockColIndex * 3 + colIndex] }}</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    
+    
+    
+
+    <script src="solvebyhand.js" type="module"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+        integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

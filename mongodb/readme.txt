@@ -1,0 +1,1 @@
+Basically only has to be installed and running correctly (as program or service), no other setup needed

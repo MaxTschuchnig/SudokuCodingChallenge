@@ -1,0 +1,22 @@
+/etc/nginx/sites-available$ cat sudoku.fh-salzburg.ac.at
+server {
+        listen 80;
+        server_name IP1.IP2.IP3.IP4;
+
+        location / {
+                proxy_pass http://localhost:3000;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_cache_bypass $http_upgrade;
+        }
+
+        # If server is down
+        error_page 502 503 504 /maintenance.html;
+
+        location = /maintenance.html {
+                root /var/www/html;
+                internal;
+        }
+}

@@ -1,0 +1,1 @@
+Compile for your os using g++ and run. Generates sudokus in a folder called data. Link your webserver to this folder and sudokus should start to be loaded from your webserver
