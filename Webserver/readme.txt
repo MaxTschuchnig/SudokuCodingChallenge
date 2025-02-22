@@ -1,5 +1,3 @@
-Congratulations to team BGL for winning the CC2025!
-
 to start run
 	- npm i
 	- node server.js
