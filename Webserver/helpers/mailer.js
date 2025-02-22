@@ -7,7 +7,7 @@ const sendActivationEmail = async (email, activationLink) => {
     secure: false,
     auth: {
       user: 'fhsudoku@gmail.com',
-      pass: 'mrph awfr xzvd cjkh' // Real Password: SOMESECRET, needs to be adjusted to pass
+      pass: 'abcd efgh ijkl mnop' // Real Password: SOMESECRET, needs to be adjusted to pass
     },
     family: 4 // ipv4 only
   })
